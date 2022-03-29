@@ -1,0 +1,19 @@
+schema: '2.0'
+stages:
+  fit_model:
+    cmd: python fit_model.py
+    deps:
+    - path: data
+      md5: 7e495562c93e22a1bdcd68e7ddafe31c.dir
+      size: 503663
+      nfiles: 1
+    - path: fit_model.py
+      md5: 5f5be11938f1b6f290acdff9718696aa
+      size: 2054
+    outs:
+    - path: models/cv.pickle
+      md5: 581115644fa642c49cb9883c0bb8098f
+      size: 108815
+    - path: models/rfc.onnx
+      md5: 4a7bdce5856c440302b4c235d5259291
+      size: 2777716

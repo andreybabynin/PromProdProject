@@ -1,0 +1,9 @@
+stages:
+  fit_model:
+    cmd: python fit_model.py
+    deps:
+      - fit_model.py
+      - data
+    outs:
+      - models/cv.pickle
+      - models/rfc.onnx
