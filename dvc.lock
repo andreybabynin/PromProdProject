@@ -3,25 +3,33 @@ stages:
   fit_model:
     cmd: python fit_model.py
     deps:
-    - path: data
-      md5: 99f8012ab427e549beb007ac1d683abc.dir
-      size: 503673
-      nfiles: 2
+    - path: data/spam.csv
+      md5: 181f52dfcd50655bc379b8f7c41df904
+      size: 503663
     - path: fit_model.py
-      md5: d8d8a4a40a8d6a52a70da20b5278afa9
-      size: 2405
+      md5: 86cf75da6d0b20cb4eeaf991314a9d6b
+      size: 2920
     params:
       params.yaml:
         feature_storage.n_estimators: 50
     outs:
-    - path: metrics/metrics.json
-      md5: 16e62f45026bd9114281b5fc0d45705d
-      size: 82
+    - path: data/X_test.pickle
+      md5: ee5cf3d436396dea7efad81de7d65482
+      size: 29922275
+    - path: data/X_train.pickle
+      md5: 73b5db760627b5ca072765aa74296759
+      size: 69794563
+    - path: data/y_test.pickle
+      md5: 610f5033cfd6f35c2f117813574f884e
+      size: 40781
+    - path: data/y_train.pickle
+      md5: 44aa4e4c17d27c8db58296e04b145d3b
+      size: 94262
     - path: models/cv.pickle
-      md5: 9e04f9641664c9c1628c065714b8dbc9
+      md5: 65eeb3ecfdfcc3782e3f283ff7e8f1e4
       size: 108815
     - path: models/rfc.onnx
-      md5: cc07e2172fce7c6ac19fd730990b21d2
+      md5: ad91e385f17c1bd40d3ff4814e83eced
       size: 2777766
   download_data:
     cmd: wget -O data/spam.csv https://www.dropbox.com/s/68edi5r8xn9lw46/spam.csv?dl=1
@@ -29,3 +37,28 @@ stages:
     - path: data/spam.csv
       md5: 181f52dfcd50655bc379b8f7c41df904
       size: 503663
+  inference_model:
+    cmd: python test_model.py
+    deps:
+    - path: data/X_test.pickle
+      md5: ee5cf3d436396dea7efad81de7d65482
+      size: 29922275
+    - path: data/X_train.pickle
+      md5: 73b5db760627b5ca072765aa74296759
+      size: 69794563
+    - path: data/y_test.pickle
+      md5: 610f5033cfd6f35c2f117813574f884e
+      size: 40781
+    - path: data/y_train.pickle
+      md5: 44aa4e4c17d27c8db58296e04b145d3b
+      size: 94262
+    - path: models/rfc.onnx
+      md5: ad91e385f17c1bd40d3ff4814e83eced
+      size: 2777766
+    outs:
+    - path: metrics/metrics.json
+      md5: 16e62f45026bd9114281b5fc0d45705d
+      size: 82
+    - path: metrics/plots/roc_auc.csv
+      md5: 8e9998b34c244e187d0f4d3e167a901d
+      size: 47

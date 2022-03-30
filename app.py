@@ -35,10 +35,6 @@ def predict(text_json):
 
 app = Flask('Myapp')
 
-# @app.route('/page')
-# def get_page():
-#     return 'ok'
-
 @app.route('/forward', methods=['POST'])
 def get_not_page():
     return predict(request.data)

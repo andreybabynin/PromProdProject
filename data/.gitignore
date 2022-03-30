@@ -1,1 +1,5 @@
 /spam.csv
+/X_train.pickle
+/X_test.pickle
+/y_train.pickle
+/y_test.pickle

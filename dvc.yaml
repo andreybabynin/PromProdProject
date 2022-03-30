@@ -8,11 +8,34 @@ stages:
     cmd: python fit_model.py
     deps:
       - fit_model.py
-      - data
+      - data/spam.csv
     outs:
       - models/cv.pickle
       - models/rfc.onnx
+      - data/X_train.pickle
+      - data/X_test.pickle
+      - data/y_train.pickle
+      - data/y_test.pickle
     params:
       - feature_storage.n_estimators
+    # metrics:
+    #   - metrics/metrics.json
+    # plots:
+    #   - metrics/plots/roc_auc.csv:
+    #       x: fpr
+    #       y: tpr
+  inference_model:
+    cmd: python test_model.py
+    deps:
+      - models/rfc.onnx
+      - data/X_train.pickle
+      - data/X_test.pickle
+      - data/y_train.pickle
+      - data/y_test.pickle
     metrics:
       - metrics/metrics.json
+    plots:
+      - metrics/plots/roc_auc.csv:
+          x: fpr
+          y: tpr
+    
