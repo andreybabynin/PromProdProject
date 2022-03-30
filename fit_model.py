@@ -17,6 +17,7 @@ from sklearn.metrics import roc_auc_score
 import warnings
 warnings.filterwarnings("ignore")
 
+from datetime import datetime
 import pickle
 import yaml
 import json
@@ -59,6 +60,14 @@ roc_train = roc_auc_score(y_train, rfc.predict(X_train))
 roc_test  = roc_auc_score(y_test, rfc.predict(X_test))
 
 onx_rfc = convert_sklearn(rfc, initial_types=[('int_input', Int64TensorType([None, 2237]))])
+
+#add metadata
+meta = onx_rfc.metadata_props.add()
+meta.key = "Date"
+meta.value = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+meta = onx_rfc.metadata_props.add()
+meta.key = "Name"
+meta.value = params['feature_storage']['experiment_name']
 
 with open('models/rfc.onnx', "wb") as f:
     f.write(onx_rfc.SerializeToString())
