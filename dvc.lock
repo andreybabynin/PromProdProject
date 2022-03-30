@@ -4,16 +4,28 @@ stages:
     cmd: python fit_model.py
     deps:
     - path: data
-      md5: 7e495562c93e22a1bdcd68e7ddafe31c.dir
-      size: 503663
-      nfiles: 1
+      md5: 99f8012ab427e549beb007ac1d683abc.dir
+      size: 503673
+      nfiles: 2
     - path: fit_model.py
-      md5: 5f5be11938f1b6f290acdff9718696aa
-      size: 2054
+      md5: 5e602fe3853cf820328797c2146b29d1
+      size: 2136
+    params:
+      params.yaml:
+        feature_storage.n_estimators: 60
     outs:
+    - path: metrics/metrics.json
+      md5: ebf6b4dd8021aa2ded449ef936a72d96
+      size: 83
     - path: models/cv.pickle
-      md5: 581115644fa642c49cb9883c0bb8098f
+      md5: f2c59ff3b6a5552f961c05f98ed8ad69
       size: 108815
     - path: models/rfc.onnx
-      md5: 4a7bdce5856c440302b4c235d5259291
-      size: 2777716
+      md5: 4cfaeea6c03c17b5098b585ae8fc13a8
+      size: 3345600
+  download_data:
+    cmd: wget -O data/spam.csv https://www.dropbox.com/s/68edi5r8xn9lw46/spam.csv?dl=1
+    outs:
+    - path: data/spam.csv
+      md5: 181f52dfcd50655bc379b8f7c41df904
+      size: 503663

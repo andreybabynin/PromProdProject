@@ -1,0 +1,2 @@
+feature_storage:
+  n_estimators: 60

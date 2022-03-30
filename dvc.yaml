@@ -1,4 +1,9 @@
 stages:
+  download_data:
+    cmd: wget -O data/spam.csv https://www.dropbox.com/s/68edi5r8xn9lw46/spam.csv?dl=1
+    outs:
+      - data/spam.csv
+
   fit_model:
     cmd: python fit_model.py
     deps:
@@ -7,3 +12,7 @@ stages:
     outs:
       - models/cv.pickle
       - models/rfc.onnx
+    params:
+      - feature_storage.n_estimators
+    metrics:
+      - metrics/metrics.json

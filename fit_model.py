@@ -6,17 +6,24 @@ from skl2onnx.common.data_types import Int64TensorType
 import pandas as pd
 import re
 import nltk
-nltk.download('stopwords')
-
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
+nltk.download('stopwords')
+
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_auc_score
 import warnings
 warnings.filterwarnings("ignore")
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 import pickle
+import yaml
+import json
+import os
+
+with open('params.yaml', 'r') as f:
+    params = yaml.safe_load(f)
 
 
 df = pd.read_csv("data/spam.csv", encoding = 'latin-1')
@@ -44,12 +51,24 @@ with open('models/cv.pickle', 'wb') as f:
 
 X_train, X_test, y_train, y_test = train_test_split(x, df.target, train_size=0.7, random_state=103, stratify=df.target)
 
-rfc = RandomForestClassifier(n_estimators=50, random_state=103, n_jobs=-1, max_features='log2')
+rfc = RandomForestClassifier(n_estimators=params['feature_storage']['n_estimators'], random_state=103, n_jobs=-1, max_features='log2')
 
 rfc.fit(X_train, y_train)
+
+roc_train = roc_auc_score(y_train, rfc.predict(X_train))
+roc_test  = roc_auc_score(y_test, rfc.predict(X_test))
 
 onx_rfc = convert_sklearn(rfc, initial_types=[('int_input', Int64TensorType([None, 2237]))])
 
 with open('models/rfc.onnx', "wb") as f:
     f.write(onx_rfc.SerializeToString())
 
+os.makedirs('metrics', exist_ok = True)
+
+with open('metrics/metrics.json', 'w') as f:
+    json.dump({
+        'train': {
+            'roc_auc': roc_train},
+        'test': {
+            'roc_auc':roc_test}
+        }, f)
