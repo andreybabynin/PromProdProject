@@ -2,13 +2,12 @@ from flask import Flask, abort, request
 import onnxruntime as rt
 import pickle
 from fit_model import create_corpus
-import json
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
+from util_functions import extract_data, output
+import subprocess
 
-CLASSIFIER = {0: 'NOT SPAM', 
-              1: 'SPAM'}
 
 with open('models/cv.pickle', 'rb') as f:
     cv = pickle.load(f)
@@ -18,25 +17,11 @@ sess = rt.InferenceSession("models/rfc.onnx")
 input_name = sess.get_inputs()[0].name
 label_name = sess.get_outputs()[0].name
 
-def extract_data(text_json):
-    #decode json
-    try:
-        text = json.loads(text_json)['text']
-    except:
-        abort(400, 'bad request')
-    return text
-
 def get_prediction(text_list):
     try:
         vector = cv.transform(text_list)
         return sess.run([label_name], {input_name: vector.toarray()})[0]
     except: abort(403, 'model failed on data')
-
-def output(result):
-    dic = {}
-    for i in range(len(result)):
-        dic[i] = {'Type': CLASSIFIER[int(result[i])], 'Result': int(result[i])}
-    return dic
 
 def predict(text_json):
 
@@ -91,6 +76,11 @@ def evaluate():
 
     return predict(text)
 
+@app.route('/retrain')
+def retrain():
+
+    out = subprocess.run(['dvc', 'status'], stdout=subprocess.PIPE)
+    return out.stdout
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5000)

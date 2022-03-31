@@ -1,36 +1,45 @@
+vars:
+  - params.yaml
+  - workspace:
+      folders:
+        input: 'data'
+        model: 'models'
+        metrics: 'metrics'
+        output: 'data'
+
+
 stages:
   download_data:
-    cmd: wget -O data/spam.csv https://www.dropbox.com/s/68edi5r8xn9lw46/spam.csv?dl=1
+    cmd: wget -O ${workspace.folders.input}/spam.csv https://www.dropbox.com/s/68edi5r8xn9lw46/spam.csv?dl=1
     outs:
-      - data/spam.csv
+    - ${workspace.folders.input}/spam.csv
 
   fit_model:
     cmd: python fit_model.py
     deps:
-      - fit_model.py
-      - data/spam.csv
+    - fit_model.py
+    - ${workspace.folders.input}/spam.csv
     outs:
-      - models/cv.pickle
-      - models/rfc.onnx
-      - data/X_train.pickle
-      - data/X_test.pickle
-      - data/y_train.pickle
-      - data/y_test.pickle
+    - ${workspace.folders.model}/cv.pickle
+    - ${workspace.folders.model}/rfc.onnx
+    - ${workspace.folders.output}/X_train.pickle
+    - ${workspace.folders.output}/X_test.pickle
+    - ${workspace.folders.output}/y_train.pickle
+    - ${workspace.folders.output}/y_test.pickle
     params:
-      - feature_storage.n_estimators
-      
+    - feature_storage.n_estimators
+
   inference_model:
     cmd: python test_model.py
     deps:
-      - models/rfc.onnx
-      - data/X_train.pickle
-      - data/X_test.pickle
-      - data/y_train.pickle
-      - data/y_test.pickle
+    - ${workspace.folders.model}/rfc.onnx
+    - ${workspace.folders.output}/X_train.pickle
+    - ${workspace.folders.output}/X_test.pickle
+    - ${workspace.folders.output}/y_train.pickle
+    - ${workspace.folders.output}/y_test.pickle
     metrics:
-      - metrics/metrics.json
+    - ${workspace.folders.metrics}/metrics.json
     plots:
-      - metrics/plots/roc_auc.csv:
-          x: fpr
-          y: tpr
-    
+    - ${workspace.folders.metrics}/plots/roc_auc.csv:
+        x: fpr
+        y: tpr

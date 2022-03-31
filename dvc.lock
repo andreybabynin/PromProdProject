@@ -7,8 +7,8 @@ stages:
       md5: 181f52dfcd50655bc379b8f7c41df904
       size: 503663
     - path: fit_model.py
-      md5: eea3b5b323f0c39ed9d652c7a837be92
-      size: 2442
+      md5: e1c9d7dea95a5f9f9afd7a0ac1f12c1f
+      size: 3160
     params:
       params.yaml:
         feature_storage.n_estimators: 50
@@ -26,10 +26,10 @@ stages:
       md5: 44aa4e4c17d27c8db58296e04b145d3b
       size: 94262
     - path: models/cv.pickle
-      md5: 09fd2e931c0c39b3990ef16378a9192b
+      md5: 4a97db166c749dddef6113f028e321fa
       size: 108815
     - path: models/rfc.onnx
-      md5: 31230eef9b51927066eaf6f1f8ad296e
+      md5: 63f9f5a9206c14987c50f6284fc72eef
       size: 2777808
   download_data:
     cmd: wget -O data/spam.csv https://www.dropbox.com/s/68edi5r8xn9lw46/spam.csv?dl=1
@@ -53,7 +53,7 @@ stages:
       md5: 44aa4e4c17d27c8db58296e04b145d3b
       size: 94262
     - path: models/rfc.onnx
-      md5: 31230eef9b51927066eaf6f1f8ad296e
+      md5: 63f9f5a9206c14987c50f6284fc72eef
       size: 2777808
     outs:
     - path: metrics/metrics.json
@@ -62,3 +62,12 @@ stages:
     - path: metrics/plots/roc_auc.csv
       md5: 8e9998b34c244e187d0f4d3e167a901d
       size: 47
+  sample_fit:
+    cmd: python fit_model.py
+    deps:
+    - path: data/spam.csv
+      md5: 181f52dfcd50655bc379b8f7c41df904
+      size: 503663
+    - path: fit_model.py
+      md5: eea3b5b323f0c39ed9d652c7a837be92
+      size: 2442

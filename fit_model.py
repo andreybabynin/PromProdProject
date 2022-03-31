@@ -2,6 +2,8 @@
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import Int64TensorType
 
+from util_functions import args
+
 import pandas as pd
 import re
 import nltk
@@ -25,7 +27,7 @@ with open('params.yaml', 'r') as f:
     params = yaml.safe_load(f)
 
 
-df = pd.read_csv("data/spam.csv", encoding = 'latin-1')
+df = pd.read_csv(f'{args.input}/spam.csv', encoding = 'latin-1')
 df.drop(df.columns[[2,3,4]], axis = 1, inplace = True)
 df.columns = ['target','message']
 
@@ -64,21 +66,23 @@ meta = onx_rfc.metadata_props.add()
 meta.key = 'Hash'
 meta.value = hashlib.md5(datetime.now().strftime("%Y-%m-%d %H-%M-%S").encode('utf-8')).hexdigest()
 
-with open('models/rfc.onnx', "wb") as f:
+with open(f'{args.model}/rfc.onnx', "wb") as f:
     f.write(onx_rfc.SerializeToString())
 
-with open('data/X_train.pickle', "wb") as f:
+with open(f'{args.model}/cv.pickle', 'wb') as f:
+    pickle.dump(cv, f)
+
+with open(f'{args.output}/X_train.pickle', "wb") as f:
     pickle.dump(X_train, f)
 
-with open('data/X_test.pickle', "wb") as f:
+with open(f'{args.output}/X_test.pickle', "wb") as f:
     pickle.dump(X_test, f)
 
-with open('data/y_train.pickle', "wb") as f:
+with open(f'{args.output}/y_train.pickle', "wb") as f:
     pickle.dump(y_train, f)
 
-with open('data/y_test.pickle', "wb") as f:
+with open(f'{args.output}/y_test.pickle', "wb") as f:
     pickle.dump(y_test, f)
 
-with open('models/cv.pickle', 'wb') as f:
-    pickle.dump(cv, f)
+
 
