@@ -1,11 +1,8 @@
-from crypt import methods
-from flask import Flask, abort, session, request, jsonify
+from flask import Flask, abort, request
 import onnxruntime as rt
 import pickle
 from fit_model import create_corpus
 import json
-import csv
-import codecs
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
@@ -29,20 +26,32 @@ def extract_data(text_json):
         abort(400, 'bad request')
     return text
 
-def get_prediction(text):
-    vector = cv.transform([text])
-    return sess.run([label_name], {input_name: vector.toarray()})[0][0]
+def get_prediction(text_list):
+    try:
+        vector = cv.transform(text_list)
+        return sess.run([label_name], {input_name: vector.toarray()})[0]
+    except: abort(403, 'model failed on data')
 
+def output(result):
+    dic = {}
+    for i in range(len(result)):
+        dic[i] = {'Type': CLASSIFIER[int(result[i])], 'Result': int(result[i])}
+    return dic
 
 def predict(text_json):
 
     text = extract_data(text_json)
-    text = create_corpus(text)
-    try:
-        result = get_prediction(text)
-    except:
-        abort(403, 'model failed on data')
-    return {'Type': CLASSIFIER[int(result)], 'Result': int(result)}
+    text_list = []
+    if type(text) == str:
+        text_list.append(create_corpus(create_corpus(text)))
+
+    else:
+        for _, v in text.items():
+            text_list.append(create_corpus(v))
+
+    result = get_prediction(text_list)
+
+    return output(result)
 
 app = Flask('Myapp')
 app.secret_key = os.urandom(24)
@@ -71,10 +80,16 @@ def forward_batch():
 
     return 'Data uploaded'
     
-@app.route('/evaluate', methods=['GET'])
+@app.route('/evaluate', methods=['GET', 'POST'])
 def evaluate():
-    # TODO: реализовать функцию загрузки множества объектов и их оценки
 
+    flask_file = request.files['file']
+    if not flask_file:
+        return 'Upload a CSV file'
+
+    text = pd.read_csv(flask_file).to_json()
+
+    return predict(text)
 
 
 if __name__ == '__main__':
