@@ -1,17 +1,17 @@
 schema: '2.0'
 stages:
   fit_model:
-    cmd: python fit_model.py
+    cmd: python fit_model.py -i data -o data -m models
     deps:
     - path: data/spam.csv
-      md5: 181f52dfcd50655bc379b8f7c41df904
-      size: 503663
+      md5: bbbfb4eec9922ee5ef1759cf268ef8e7
+      size: 506009
     - path: fit_model.py
-      md5: e1c9d7dea95a5f9f9afd7a0ac1f12c1f
-      size: 3160
+      md5: ee69aed573b032e7fedfeba9d11ac620
+      size: 2485
     params:
       params.yaml:
-        feature_storage.n_estimators: 50
+        feature_storage.n_estimators: 60
     outs:
     - path: data/X_test.pickle
       md5: ee5cf3d436396dea7efad81de7d65482
@@ -20,25 +20,25 @@ stages:
       md5: 73b5db760627b5ca072765aa74296759
       size: 69794563
     - path: data/y_test.pickle
-      md5: 610f5033cfd6f35c2f117813574f884e
-      size: 40781
+      md5: 1cdf4202a0b462f6d0552a8f7c7729bc
+      size: 40779
     - path: data/y_train.pickle
-      md5: 44aa4e4c17d27c8db58296e04b145d3b
-      size: 94262
+      md5: c1b011e9589efb0181a8358c5db4696e
+      size: 94260
     - path: models/cv.pickle
-      md5: 4a97db166c749dddef6113f028e321fa
+      md5: a5264e3789153c7de93b3fb040fecfe0
       size: 108815
     - path: models/rfc.onnx
-      md5: 63f9f5a9206c14987c50f6284fc72eef
-      size: 2777808
+      md5: 8946ce5c75ff48f53aad8157c7585c8f
+      size: 3345651
   download_data:
-    cmd: wget -O data/spam.csv https://www.dropbox.com/s/68edi5r8xn9lw46/spam.csv?dl=1
+    cmd: wget -O data/spam.csv https://www.dropbox.com/s/6qo05er8p2afg61/new_spam.csv?dl=1
     outs:
     - path: data/spam.csv
-      md5: 181f52dfcd50655bc379b8f7c41df904
-      size: 503663
+      md5: bbbfb4eec9922ee5ef1759cf268ef8e7
+      size: 506009
   inference_model:
-    cmd: python test_model.py
+    cmd: python test_model.py -o data -m models --metrics metrics
     deps:
     - path: data/X_test.pickle
       md5: ee5cf3d436396dea7efad81de7d65482
@@ -47,27 +47,18 @@ stages:
       md5: 73b5db760627b5ca072765aa74296759
       size: 69794563
     - path: data/y_test.pickle
-      md5: 610f5033cfd6f35c2f117813574f884e
-      size: 40781
+      md5: 1cdf4202a0b462f6d0552a8f7c7729bc
+      size: 40779
     - path: data/y_train.pickle
-      md5: 44aa4e4c17d27c8db58296e04b145d3b
-      size: 94262
+      md5: c1b011e9589efb0181a8358c5db4696e
+      size: 94260
     - path: models/rfc.onnx
-      md5: 63f9f5a9206c14987c50f6284fc72eef
-      size: 2777808
+      md5: 8946ce5c75ff48f53aad8157c7585c8f
+      size: 3345651
     outs:
     - path: metrics/metrics.json
-      md5: 16e62f45026bd9114281b5fc0d45705d
-      size: 82
+      md5: ebf6b4dd8021aa2ded449ef936a72d96
+      size: 83
     - path: metrics/plots/roc_auc.csv
       md5: 8e9998b34c244e187d0f4d3e167a901d
       size: 47
-  sample_fit:
-    cmd: python fit_model.py
-    deps:
-    - path: data/spam.csv
-      md5: 181f52dfcd50655bc379b8f7c41df904
-      size: 503663
-    - path: fit_model.py
-      md5: eea3b5b323f0c39ed9d652c7a837be92
-      size: 2442
