@@ -19,6 +19,7 @@ warnings.filterwarnings("ignore")
 from datetime import datetime
 import pickle
 import yaml
+import hashlib
 
 with open('params.yaml', 'r') as f:
     params = yaml.safe_load(f)
@@ -59,6 +60,9 @@ meta.value = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
 meta = onx_rfc.metadata_props.add()
 meta.key = "Name"
 meta.value = params['feature_storage']['experiment_name']
+meta = onx_rfc.metadata_props.add()
+meta.key = 'Hash'
+meta.value = hashlib.md5(datetime.now().strftime("%Y-%m-%d %H-%M-%S").encode('utf-8')).hexdigest()
 
 with open('models/rfc.onnx', "wb") as f:
     f.write(onx_rfc.SerializeToString())
