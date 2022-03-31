@@ -4,12 +4,9 @@ import os
 from werkzeug.utils import secure_filename
 from util_functions import *
 import subprocess
-import yaml
 import json
 
-with open('params.yaml', 'r') as f:
-    params = yaml.safe_load(f)
-
+params = open_yaml('params.yaml')
 model_folder = params['workspace']['folders']['model']
 
 app = Flask('Myapp')
@@ -25,7 +22,9 @@ def forward():
 @app.route('/metadata')
 def metadata():
     sess = return_model(model_folder)
-    return sess._model_meta.custom_metadata_map
+    metadata_dic = sess._model_meta.custom_metadata_map
+    metadata_dic['Hash'] = get_hash()
+    return metadata_dic
 
 @app.route('/forward_batch', methods=['POST'])
 def forward_batch():
@@ -53,10 +52,12 @@ def evaluate():
 def retrain():
     #TODO: закончить с моделью
     # folder_name = 'instance/uploads'
-    # _ = subprocess.run(['dvc', 'exp', 'run', '-C', 'workspace.folders.input=', f'{folder_name}'], stdout=subprocess.PIPE)''
-    exp_json = subprocess.run(['dvc', 'exp', 'show', '--json'], stdout=subprocess.PIPE)
+    # _ = subprocess.run(['dvc', 'exp', 'run', '-C', 'workspace.folders.input=', f'{folder_name}', '-n', '{exp_int'], stdout=subprocess.PIPE)''
+    exp_json = subprocess.run(['dvc', 'exp', 'show', '--json'], stdout=subprocess.PIPE).stdout
     json_dic = json.loads(exp_json)
-    return json_dic.keys()
+    with open('json_dic.pickle', 'wb') as f:
+        pickle.dump(json_dic, f)
+    return json_dic
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5000)

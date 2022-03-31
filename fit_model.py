@@ -19,11 +19,8 @@ warnings.filterwarnings("ignore")
 
 from datetime import datetime
 import pickle
-import yaml
-# import hashlib
 
-with open('params.yaml', 'r') as f:
-    params = yaml.safe_load(f)
+params = open_yaml('params.yaml')
 
 try:
     df = pd.read_csv(f'{args.input}/spam.csv', encoding = 'utf-8')
@@ -50,11 +47,8 @@ meta.key = "Date"
 meta.value = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
 meta = onx_rfc.metadata_props.add()
 meta.key = "Name"
-# meta.value = params['feature_storage']['experiment_name']
 meta.value = args.name
-# meta = onx_rfc.metadata_props.add()
-# meta.key = 'Hash'
-# meta.value = hashlib.md5(datetime.now().strftime("%Y-%m-%d %H-%M-%S").encode('utf-8')).hexdigest()
+
 
 with open(f'{args.model}/rfc.onnx', "wb") as f:
     f.write(onx_rfc.SerializeToString())

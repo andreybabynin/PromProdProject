@@ -1,3 +1,11 @@
 feature_storage:
-  n_estimators: 50
-  experiment_name: "mockingbird"
+  n_estimators: 60
+
+workspace:
+  folders:
+    input: data
+    model: models
+    metrics: metrics
+    output: data
+  models:
+    name: mockingbird

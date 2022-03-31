@@ -8,7 +8,7 @@ import re
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
 # nltk.download('stopwords')
-
+import yaml
 
 CLASSIFIER = {0: 'NOT SPAM', 
               1: 'SPAM'}
@@ -35,7 +35,25 @@ parser.add_argument('--metrics',
                     default='metrics',
                     help='metrics folder')
 
+parser.add_argument('-n', '--name',
+                    type=str,
+                    default='default',
+                    help='name of a trained model')
+
 args = parser.parse_args()
+
+def create_corpus(row):
+    review = re.sub('[^a-zA-Z]', ' ', row)
+    review = review.lower()
+    review = review.split()
+    review = [PorterStemmer().stem(word) for word in review if not word in stopwords.words('english')]
+    review = ' '.join(review)
+    return review
+
+def open_yaml(file_path):
+    with open(file_path, 'rb') as f:
+        return yaml.safe_load(f)
+
 
 def return_model(model_folder):
 
@@ -92,10 +110,8 @@ def output(result):
         dic[i] = {'Type': CLASSIFIER[int(result[i])], 'Result': int(result[i])}
     return dic
 
-def create_corpus(row):
-    review = re.sub('[^a-zA-Z]', ' ', row)
-    review = review.lower()
-    review = review.split()
-    review = [PorterStemmer().stem(word) for word in review if not word in stopwords.words('english')]
-    review = ' '.join(review)
-    return review
+def get_hash():
+    loc = open_yaml('dvc.lock')
+    return loc['stages']['fit_model']['outs'][5]['md5']
+
+
