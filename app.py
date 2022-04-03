@@ -1,6 +1,4 @@
-from crypt import methods
-from sys import stdout
-from flask import Flask, abort, request
+from flask import Flask, request
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
@@ -54,7 +52,7 @@ def evaluate():
 def retrain():
     
     EXP_ID = get_id()
-    _ = subprocess.run(['dvc', 'exp', 'run', '-n', f'{EXP_ID}'], check=True)
+    _ = subprocess.run(['dvc', 'exp', 'run', '-q', '-n', f'{EXP_ID}'], check=True)
 
     return f'New model trained, experiment id {EXP_ID}\n'
 
@@ -68,6 +66,17 @@ def metrics(exp_id):
     exp_dic = json_dic[str(last_commit)[3:-4]]
 
     return get_metrics(exp_dic, exp_id)
+
+
+@app.route('/add_data')
+def add_data():
+    pass
+
+@app.route('/deploy/<int:exp_id>')
+def deploy(exp_id):
+    _ = subprocess.run(['dvc', 'exp', 'apply', '-q', f'{exp_id}'], check=True)
+
+    return f'experiment {exp_id} is deployed\n'
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5000)
