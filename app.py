@@ -1,5 +1,4 @@
 from flask import Flask, request
-from numpy import append
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename

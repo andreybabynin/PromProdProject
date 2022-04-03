@@ -7,8 +7,8 @@ stages:
       md5: bbbfb4eec9922ee5ef1759cf268ef8e7
       size: 506009
     - path: fit_model.py
-      md5: 9b90db4895efe2a65135d3a6bcd641d7
-      size: 2141
+      md5: 99aa9ea11484cbfbec7c490b71f1d6fc
+      size: 2049
     params:
       params.yaml:
         feature_storage.n_estimators: 60
@@ -26,10 +26,10 @@ stages:
       md5: c1b011e9589efb0181a8358c5db4696e
       size: 94260
     - path: models/cv.pickle
-      md5: b7d705878f61eefab52d0303bbcaf5e8
+      md5: 2307603b7091b4c8e0f8399be623cdcd
       size: 108815
     - path: models/rfc.onnx
-      md5: 359b89e9ef542ba34dac25df7f687a96
+      md5: c87836bbe609541d3c08302ff5665e77
       size: 3345650
   download_data:
     cmd: wget -O data/spam.csv https://www.dropbox.com/s/6qo05er8p2afg61/new_spam.csv?dl=1
@@ -53,7 +53,7 @@ stages:
       md5: c1b011e9589efb0181a8358c5db4696e
       size: 94260
     - path: models/rfc.onnx
-      md5: 359b89e9ef542ba34dac25df7f687a96
+      md5: c87836bbe609541d3c08302ff5665e77
       size: 3345650
     outs:
     - path: metrics/metrics.json

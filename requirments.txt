@@ -5,5 +5,6 @@ scikit-learn==1.0.2
 skl2onnx==1.11
 onnxruntime==1.11.0
 PyYAML==6.0
+dvc==2.9.5
 
 

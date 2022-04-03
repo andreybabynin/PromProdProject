@@ -1,5 +1,5 @@
 feature_storage:
-  n_estimators: 60
+  n_estimators: 50
 
 workspace:
   folders:

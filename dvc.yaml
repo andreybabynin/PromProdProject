@@ -1,21 +1,14 @@
-vars:
-  - params.yaml
-  - workspace:
-      folders:
-        input: 'data'
-        model: 'models'
-        metrics: 'metrics'
-        output: 'data'
-
+# vars:
+#   - params.yaml
 
 stages:
   download_data:
-    cmd: wget -O ${workspace.folders.input}/spam.csv https://www.dropbox.com/s/68edi5r8xn9lw46/spam.csv?dl=1
+    cmd: wget -O ${workspace.folders.input}/spam.csv https://www.dropbox.com/s/6qo05er8p2afg61/new_spam.csv?dl=1
     outs:
     - ${workspace.folders.input}/spam.csv
 
   fit_model:
-    cmd: python fit_model.py
+    cmd: python fit_model.py -i ${workspace.folders.input} -o ${workspace.folders.output} -m ${workspace.folders.model} -n ${workspace.models.name}
     deps:
     - fit_model.py
     - ${workspace.folders.input}/spam.csv
@@ -30,7 +23,7 @@ stages:
     - feature_storage.n_estimators
 
   inference_model:
-    cmd: python test_model.py
+    cmd: python test_model.py -o ${workspace.folders.output} -m ${workspace.folders.model} --metrics ${workspace.folders.metrics}
     deps:
     - ${workspace.folders.model}/rfc.onnx
     - ${workspace.folders.output}/X_train.pickle
