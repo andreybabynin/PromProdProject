@@ -1,3 +1,5 @@
+from crypt import methods
+from sys import stdout
 from flask import Flask, abort, request
 import pandas as pd
 import os
@@ -50,14 +52,22 @@ def evaluate():
 
 @app.route('/retrain')
 def retrain():
-    #TODO: закончить с моделью
-    # folder_name = 'instance/uploads'
-    # _ = subprocess.run(['dvc', 'exp', 'run', '-C', 'workspace.folders.input=', f'{folder_name}', '-n', '{exp_int'], stdout=subprocess.PIPE)''
+    
+    EXP_ID = get_id()
+    _ = subprocess.run(['dvc', 'exp', 'run', '-n', f'{EXP_ID}'], check=True)
+
+    return f'New model trained, experiment id {EXP_ID}\n'
+
+
+@app.route('/metrics/<int:exp_id>', methods=['GET'])
+def metrics(exp_id):
     exp_json = subprocess.run(['dvc', 'exp', 'show', '--json'], stdout=subprocess.PIPE).stdout
+    last_commit = subprocess.run(['git', 'log', '-n', '1', '--format="%H"'], stdout=subprocess.PIPE).stdout
+
     json_dic = json.loads(exp_json)
-    with open('json_dic.pickle', 'wb') as f:
-        pickle.dump(json_dic, f)
-    return json_dic
+    exp_dic = json_dic[str(last_commit)[3:-4]]
+
+    return get_metrics(exp_dic, exp_id)
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5000)

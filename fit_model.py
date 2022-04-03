@@ -5,10 +5,10 @@ from util_functions import *
 
 import pandas as pd
 # import re
-import nltk
-from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
-nltk.download('stopwords')
+# import nltk
+# from nltk.corpus import stopwords
+# from nltk.stem.porter import PorterStemmer
+# nltk.download('stopwords')
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.ensemble import RandomForestClassifier

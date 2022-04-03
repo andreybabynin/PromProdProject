@@ -4,11 +4,13 @@ import argparse
 import onnxruntime as rt
 import pickle
 import re
-# import nltk
+import nltk
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
-# nltk.download('stopwords')
+nltk.download('stopwords')
 import yaml
+import random
+import string
 
 CLASSIFIER = {0: 'NOT SPAM', 
               1: 'SPAM'}
@@ -41,6 +43,9 @@ parser.add_argument('-n', '--name',
                     help='name of a trained model')
 
 args = parser.parse_args()
+
+def get_id():
+    return ''.join(random.choices(string.digits, k=9))
 
 def create_corpus(row):
     review = re.sub('[^a-zA-Z]', ' ', row)
@@ -79,6 +84,16 @@ def get_prediction(text_list, model_folder):
 
         return run_model(vector, model_folder)
     except: abort(403, 'model failed on data')
+
+def get_metrics(exp_dic, exp_id):
+    for k, v in exp_dic.items():
+        for k1, v1 in v.items():
+            if k1 != 'error':
+                if v1['name'] == str(exp_id):
+                    return v1['metrics']
+
+    return abort(404, f'there is no such EXP_ID={exp_id}')
+
 
 def predict(text_json, model_folder):
 
