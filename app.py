@@ -1,13 +1,17 @@
 from flask import Flask, request
+from numpy import append
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
 from util_functions import *
 import subprocess
 import json
+import warnings
+warnings.filterwarnings("ignore")
 
 params = open_yaml('params.yaml')
 model_folder = params['workspace']['folders']['model']
+data_folder = params['workspace']['folders']['input']
 
 app = Flask('Myapp')
 app.secret_key = os.urandom(24)
@@ -31,18 +35,18 @@ def forward_batch():
 
     flask_file = request.files['file']
     if not flask_file:
-        return 'Upload a CSV file'
+        return 'Upload a CSV file\n'
 
     flask_file.save(os.path.join(uploads_dir, secure_filename(flask_file.filename)))
 
-    return 'Data uploaded'
+    return 'Data uploaded\n'
     
 @app.route('/evaluate', methods=['GET', 'POST'])
 def evaluate():
 
     flask_file = request.files['file']
     if not flask_file:
-        return 'Upload a CSV file'
+        return 'Upload a CSV file\n'
 
     text = pd.read_csv(flask_file).to_json()
 
@@ -70,7 +74,18 @@ def metrics(exp_id):
 
 @app.route('/add_data')
 def add_data():
-    pass
+    df = pd.read_csv(f'{data_folder}/spam.csv', index_col=0)
+
+    files = os.listdir(uploads_dir)
+    files = [f for f in files if f.endswith('.csv')]
+
+    for f in files:
+        df_temp = pd.read_csv(f'{uploads_dir}/{f}')
+        df = df.append(df_temp, ignore_index=True)
+
+    df.to_csv(f'{data_folder}/spam.csv')
+
+    return 'Data added\n'
 
 @app.route('/deploy/<int:exp_id>')
 def deploy(exp_id):
